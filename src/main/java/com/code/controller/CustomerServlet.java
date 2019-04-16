@@ -44,7 +44,7 @@ public class CustomerServlet extends javax.servlet.http.HttpServlet {
         }else {
             this.customerService.remove(id);
             try {
-                response.sendRedirect("/customer");
+                response.sendRedirect("/customers");
             }catch ( IOException e){
                 e.printStackTrace();
             }
@@ -104,10 +104,28 @@ public class CustomerServlet extends javax.servlet.http.HttpServlet {
                 showDeleteForm(request,response);
                 break;
             case "view":
+                viewCustomer(request,response);
                 break;
                 default:
                     lisCustomers(request,response);
                     break;
+        }
+    }
+
+    private void viewCustomer(HttpServletRequest request, HttpServletResponse response) {
+        int id = Integer.parseInt(request.getParameter("id"));
+        Customer customer = this.customerService.findById(id);
+        RequestDispatcher dispatcher;
+        if (customer == null){
+            dispatcher = request.getRequestDispatcher("error-404.jsp");
+        }else {
+            request.setAttribute("customer",customer);
+            dispatcher = request.getRequestDispatcher("customer/view.jsp");
+        }
+        try {
+            dispatcher.forward(request,response);
+        }catch (ServletException | IOException e){
+            e.printStackTrace();
         }
     }
 
